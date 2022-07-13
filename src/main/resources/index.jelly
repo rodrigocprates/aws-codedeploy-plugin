@@ -1,4 +1,4 @@
 <?jelly escape-by-default='true'?>
 <div>
-  This plugin provides a "post-build" step for AWS CodeDeploy.
+  Customized AWS CodeDeploy plugin. See aws-codedeploy-plugin repository. (allow prop "overrideZipFileName: artifact.zip" to force zip file name).
 </div>

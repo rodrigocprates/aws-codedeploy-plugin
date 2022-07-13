@@ -77,10 +77,10 @@ import javax.servlet.ServletException;
  * the globally configured keys. This allows the plugin to get temporary credentials instead of requiring permanent
  * credentials to be configured for each project.
  */
-public class AWSCodeDeployPublisher extends Publisher implements SimpleBuildStep {
+public class AWSCodeDeployCustomPublisher extends Publisher implements SimpleBuildStep {
     public static final long      DEFAULT_TIMEOUT_SECONDS           = 900;
     public static final long      DEFAULT_POLLING_FREQUENCY_SECONDS = 15;
-    public static final String    ROLE_SESSION_NAME                 = "jenkins-codedeploy-plugin";
+    public static final String    ROLE_SESSION_NAME                 = "jenkins-codedeploy-customized-plugin";
     private static final Regions[] AVAILABLE_REGIONS                 = {Regions.AP_NORTHEAST_1, Regions.AP_SOUTHEAST_1, Regions.AP_SOUTHEAST_2, Regions.EU_WEST_1, Regions.US_EAST_1, Regions.US_WEST_2, Regions.EU_CENTRAL_1, Regions.US_WEST_1, Regions.SA_EAST_1, Regions.AP_NORTHEAST_2, Regions.AP_SOUTH_1, Regions.US_EAST_2, Regions.CA_CENTRAL_1, Regions.EU_WEST_2, Regions.CN_NORTH_1};
 
     private final String  s3bucket;
@@ -108,12 +108,13 @@ public class AWSCodeDeployPublisher extends Publisher implements SimpleBuildStep
     private final String credentials;
     private final String deploymentMethod;
     private final String versionFileName;
+    private final String overrideZipFileName;
 
     private PrintStream logger;
     private Map <String, String> envVars;
     // Fields in config.jelly must match the parameter names in the "DataBoundConstructor"
     @DataBoundConstructor
-    public AWSCodeDeployPublisher(
+    public AWSCodeDeployCustomPublisher(
             String s3bucket,
             String s3prefix,
             String githubRepository,
@@ -137,7 +138,8 @@ public class AWSCodeDeployPublisher extends Publisher implements SimpleBuildStep
             String proxyHost,
             int proxyPort,
             String excludes,
-            String subdirectory) {
+            String subdirectory,
+            String overrideZipFileName) {
 
         this.externalId = externalId;
         this.applicationName = applicationName;
@@ -160,6 +162,7 @@ public class AWSCodeDeployPublisher extends Publisher implements SimpleBuildStep
         this.awsSecretKey = awsSecretKey;
         this.iamRoleArn = iamRoleArn;
         this.deploymentGroupAppspec = deploymentGroupAppspec;
+        this.overrideZipFileName = overrideZipFileName; // new property
 
         if (waitForCompletion != null && waitForCompletion) {
             this.waitForCompletion = waitForCompletion;
@@ -331,7 +334,12 @@ public class AWSCodeDeployPublisher extends Publisher implements SimpleBuildStep
           if(reader !=null){reader.close();}
         }
 
-        if (version != null){
+        // Snippet to force zip file name
+        if (StringUtils.isNotEmpty(overrideZipFileName)) {
+            zipFile = new File("/tmp/" + getOverrideZipFileNameWithoutExtension() +".zip");
+            boolean fileCreated = zipFile.createNewFile();
+        }
+        else if (version != null){
           zipFile = new File("/tmp/" + projectName + "-" + version + ".zip");
           final boolean fileCreated = zipFile.createNewFile();
           if (!fileCreated) {
@@ -520,7 +528,7 @@ public class AWSCodeDeployPublisher extends Publisher implements SimpleBuildStep
 
     /**
      *
-     * Descriptor for {@link AWSCodeDeployPublisher}. Used as a singleton.
+     * Descriptor for {@link AWSCodeDeployCustomPublisher}. Used as a singleton.
      * The class is marked as public so that it can be accessed from views.
      *
      * See <tt>src/main/resources/com/amazonaws/codedeploy/AWSCodeDeployPublisher/*.jelly</tt>
@@ -775,5 +783,12 @@ public class AWSCodeDeployPublisher extends Publisher implements SimpleBuildStep
 
     public String getSubdirectoryFromEnv() {
         return Util.replaceMacro(this.subdirectory, envVars);
+    }
+
+    private String getOverrideZipFileNameWithoutExtension() {
+        if (StringUtils.isNotBlank(overrideZipFileName))
+            return overrideZipFileName.replace(".zip", "");
+
+        return overrideZipFileName;
     }
 }

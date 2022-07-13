@@ -6,7 +6,7 @@
     <version>2.19</version>
   </parent>
 
-  <artifactId>codedeploy</artifactId>
+  <artifactId>codedeploy-customized-plugin</artifactId>
   <version>1.20-SNAPSHOT</version>
   <packaging>hpi</packaging>
   <groupId>com.amazonaws</groupId>
@@ -16,9 +16,12 @@
 
   <developers>
     <developer>
-      <id>jmcfar</id>
-      <name>Josh Mcfarlane</name>
-      <email>jmcfar@amazon.com</email>
+      <id>rodrigoprates</id>
+      <name>Rodrigo Prates</name>
+    </developer>
+    <developer>
+      <id>brunomoura</id>
+      <name>Bruno Moura</name>
     </developer>
   </developers>
 
@@ -29,13 +32,6 @@
       <distribution>repo</distribution>
     </license>
   </licenses>
-
-  <scm>
-    <connection>scm:git:ssh://github.com/jenkinsci/aws-codedeploy-plugin.git</connection>
-    <developerConnection>scm:git:ssh://git@github.com/jenkinsci/aws-codedeploy-plugin.git</developerConnection>
-    <url>https://github.com/jenkinsci/aws-codedeploy-plugin</url>
-    <tag>HEAD</tag>
-  </scm>
 
   <repositories>
     <repository>

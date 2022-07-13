@@ -144,8 +144,8 @@ public class AWSClients {
 
         AWSSecurityTokenServiceClient sts = new AWSSecurityTokenServiceClient();
 
-        int credsDuration = (int) (AWSCodeDeployPublisher.DEFAULT_TIMEOUT_SECONDS
-                        * AWSCodeDeployPublisher.DEFAULT_POLLING_FREQUENCY_SECONDS);
+        int credsDuration = (int) (AWSCodeDeployCustomPublisher.DEFAULT_TIMEOUT_SECONDS
+                        * AWSCodeDeployCustomPublisher.DEFAULT_POLLING_FREQUENCY_SECONDS);
 
         if (credsDuration > 3600) {
             credsDuration = 3600;
@@ -155,7 +155,7 @@ public class AWSClients {
                         .withRoleArn(iamRole)
                         .withExternalId(externalId)
                         .withDurationSeconds(credsDuration)
-                        .withRoleSessionName(AWSCodeDeployPublisher.ROLE_SESSION_NAME)
+                        .withRoleSessionName(AWSCodeDeployCustomPublisher.ROLE_SESSION_NAME)
         );
 
         Credentials stsCredentials = assumeRoleResult.getCredentials();
